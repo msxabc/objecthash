@@ -51,10 +51,6 @@ dependencies {
 
 }
 
-test {
-    useJUnitPlatform()
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
