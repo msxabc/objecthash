@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        google()
+    }
+    dependencies {
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+group = 'org.links'
+version = 'OP-0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+sourceSets {
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    google()
+
+    maven {
+        name 'resonance-snapshots'
+        credentials {
+            username "$nexusUsername"
+            password "$nexusPassword"
+        }
+        url "https://nxus.guardtime.com/repository/resonance-snapshots/"
+    }
+    maven {
+        name 'resonance-releases'
+        credentials {
+            username "$nexusUsername"
+            password "$nexusPassword"
+        }
+        url "https://nxus.guardtime.com/repository/resonance-releases/"
+    }
+}
+
+dependencies {
+    compile group: 'org.json', name: 'json', version: '20180813'
+    compile 'junit:junit:4.12'
+
+    testCompile 'junit:junit:4.12'
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact(jar)
+        }
+    }
+    repositories {
+        maven {
+            name "deploy"
+            credentials {
+                username "$nexusUsername"
+                password "$nexusPassword"
+            }
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url "https://nxus.guardtime.com/repository/resonance-snapshots/"
+            } else {
+                url "https://nxus.guardtime.com/repository/resonance-releases/"
+            }
+        }
+    }
+}
+
+
