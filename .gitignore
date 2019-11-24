@@ -2,8 +2,8 @@
 *.pyc
 *.swp
 *.so
+.idea
 pkg/
-src/
 # made by sbt
 project/
 objecthash_test
