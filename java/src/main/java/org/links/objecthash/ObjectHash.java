@@ -154,7 +154,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
       ByteBuffer buff = ByteBuffer.allocate(2 * SHA256_BLOCK_SIZE);
       if (!redactedData.isRedacted()) {
         ObjectHash hVal = new ObjectHash();
-        hVal.hashAny(obj.get(REDACT_DATA_KEY));
+        hVal.hashAny(redactedData.getRedactedData());
         buff.put(hVal.hash());
       } else {
         try {
@@ -163,7 +163,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
           throw new IllegalArgumentException ("hash value for redacted type must be in hexdecimal string format");
         }
       }
-      input = redactInputType(obj);
+      input = redactInputType(redactedData);
       buffers.add(buff);
     } else {
       while (keys.hasNext()) {
@@ -272,7 +272,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
     return new String(hexDigits);
   }
 
-  private static String toHex(byte[] buffer) {
+  public static String toHex(byte[] buffer) {
     StringBuffer hexStringBuffer = new StringBuffer();
     for (int i = 0; i < buffer.length; i++) {
       hexStringBuffer.append(byteToHex(buffer[i]));
@@ -355,10 +355,9 @@ public class ObjectHash implements Comparable<ObjectHash> {
     return sb.toString();
   }
 
-  private static char redactInputType(JSONObject obj) {
-    Object data = obj.get(REDACT_DATA_KEY);
+  private static char redactInputType(RedactedData data) {
 
-    ObjectHash.JsonType outerType = getType(data);
+    ObjectHash.JsonType outerType = getType(data.getRedactedData());
     switch (outerType) {
       case INT: {
         return 'i';
@@ -373,8 +372,7 @@ public class ObjectHash implements Comparable<ObjectHash> {
         return 'f';
       }
       default: {
-        throw new IllegalArgumentException("Illegal type in redacted data: "
-                + obj.getClass());
+        throw new IllegalArgumentException("Illegal type in redacted data: " + data.getRedactedData().getClass());
       }
     }
   }
